@@ -5,3 +5,4 @@ Aluno | N. USP | GitHub
 ------------ | ------------- | --------------
 Danilo Guarnieri Cardoso | 10442277 | [dcardos](https://github.com/dcardos)
 Murilo Pratavieira | 8123082 | [murilopratavieira](https://github.com/murilopratavieira)
+Gustavo Cesar Leite De Oliveira Santos | xxxxx | [yyyyy](https://github.com/yyyyy)
