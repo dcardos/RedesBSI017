@@ -4,4 +4,4 @@ Trabalho de redes para a disciplina de Redes da turma de BSI do ano de 2017 - pr
 Aluno | N. USP | GitHub
 ------------ | ------------- | --------------
 Danilo Guarnieri Cardoso | 10442277 | [dcardos](https://github.com/dcardos)
-Murilo | 8123082 | [murilopratavieira](https://github.com/murilopratavieira)
+Murilo Pratavieira | 8123082 | [murilopratavieira](https://github.com/murilopratavieira)
