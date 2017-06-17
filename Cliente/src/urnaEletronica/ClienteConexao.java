@@ -20,7 +20,7 @@ public class ClienteConexao {
 
         // recebe porta por argumento opcional, default é a porta 7
         // TODO: adicionar porta do servidor
-        int servPort = 2299;
+        int servPort = 40003;
 
         // Cria o socket que sera utilizado para se conectar ao servidor na porta especificada
         Socket socket = new Socket(server, servPort);
