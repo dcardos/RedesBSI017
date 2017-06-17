@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="638.0" prefWidth="993.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="14.0" text="Votação Eletrônica" textAlignment="CENTER" textOverrun="CLIP" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0">
+         <font>
+            <Font name="Calibri" size="36.0" />
+         </font>
+      </Label>
+      <Label layoutX="46.0" layoutY="87.0" text="Feedback ao Usuario">
+         <font>
+            <Font name="Calibri" size="20.0" />
+         </font>
+      </Label>
+      <RadioButton layoutX="46.0" layoutY="130.0" mnemonicParsing="false" text="RadioButton" />
+      <Button fx:id="btnVotarBranco" layoutX="545.0" layoutY="577.0" mnemonicParsing="false" text="Votar em branco" />
+      <Button fx:id="btnVotarNulo" layoutX="715.0" layoutY="577.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="131.0" text="Votar nulo" />
+      <Button fx:id="btnVotar" layoutX="101.0" layoutY="577.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="131.0" text="Votar" />
+      <Button fx:id="btnEncerrar" layoutX="885.0" layoutY="577.0" mnemonicParsing="false" text="Encerrar" />
+      <BarChart layoutX="382.0" layoutY="130.0" prefHeight="421.0" prefWidth="583.0">
+        <xAxis>
+          <CategoryAxis side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis side="LEFT" />
+        </yAxis>
+      </BarChart>
+      <Label layoutX="598.0" layoutY="87.0" text="Resultados parciais">
+         <font>
+            <Font name="Calibri" size="20.0" />
+         </font>
+      </Label>
+      <Button fx:id="btnAtualizar" layoutX="884.0" layoutY="83.0" mnemonicParsing="false" text="Atualizar" />
+   </children>
+</AnchorPane>
