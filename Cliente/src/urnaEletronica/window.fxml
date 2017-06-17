@@ -9,8 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="638.0" prefWidth="993.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="638.0" prefWidth="993.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="urnaEletronica.MainWindowController">
    <children>
       <Label alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="14.0" text="Votação Eletrônica" textAlignment="CENTER" textOverrun="CLIP" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0">
          <font>
@@ -26,7 +25,7 @@
       <Button fx:id="btnVotarBranco" layoutX="545.0" layoutY="577.0" mnemonicParsing="false" text="Votar em branco" />
       <Button fx:id="btnVotarNulo" layoutX="715.0" layoutY="577.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="131.0" text="Votar nulo" />
       <Button fx:id="btnVotar" layoutX="101.0" layoutY="577.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="131.0" text="Votar" />
-      <Button fx:id="btnEncerrar" layoutX="885.0" layoutY="577.0" mnemonicParsing="false" text="Encerrar" />
+      <Button fx:id="btnEncerrar" layoutX="885.0" layoutY="577.0" mnemonicParsing="false" onAction="#closeWindow" text="Encerrar" />
       <BarChart layoutX="382.0" layoutY="130.0" prefHeight="421.0" prefWidth="583.0">
         <xAxis>
           <CategoryAxis side="BOTTOM" />
