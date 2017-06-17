@@ -13,7 +13,7 @@ public class ClienteConexao {
 
     public void conecta() throws IOException{
         // TODO: adicionar IP do servidor
-        String server = "127.0.0.1";
+        String server = "cosmos.lasdpc.icmc.usp.br";
 
         // Converte String de mensagem para bytes codificacao padrao
         byte[] byteBuffer = "888".getBytes();   // carregar candidatos
