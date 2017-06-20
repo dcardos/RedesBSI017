@@ -11,7 +11,7 @@ import java.net.SocketException;
  */
 public class ClienteConexao {
 
-    public void conecta() throws IOException{
+    public static void  conecta() throws IOException{
         // TODO: adicionar IP do servidor
         String server = "cosmos.lasdpc.icmc.usp.br";
 

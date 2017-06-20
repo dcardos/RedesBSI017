@@ -16,7 +16,7 @@
             <Font name="Calibri" size="36.0" />
          </font>
       </Label>
-      <Label layoutX="46.0" layoutY="87.0" text="Feedback ao Usuario">
+      <Label fx:id="userFeedback" layoutX="46.0" layoutY="87.0" text="Feedback ao Usuario">
          <font>
             <Font name="Calibri" size="20.0" />
          </font>
