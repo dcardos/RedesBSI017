@@ -39,6 +39,22 @@ void inicializa(Candidato candidatos[]){
     candidatos[4].num_votos = 0;
 }
 
+char preparaDados(Candidato candidato, char preparado[]){
+    sprintf(preparado,"%d",candidato.codigo_votacao);
+    strcat(preparado, ",");
+    strcat(preparado, candidato.nome_candidato);
+    strcat(preparado, ",");
+    strcat(preparado, candidato.partido);
+    strcat(preparado, ",");
+    return preparado;
+}
+
+void computaVoto(Candidato candidato, int codigoVotacao){
+    if(codigoVotacao == candidato.codigo_votacao){
+        candidato.num_votos++;
+    }
+}
+
 int main(int argc, char *argv[ ])
 {
    /*
@@ -203,11 +219,21 @@ int main(int argc, char *argv[ ])
          send(connected, send_data, strlen(send_data), 0);
 
          sleep(1);
+         
+         if (strcmp(recv_data,"s\n") == 0 || strcmp(recv_data,"S\n") == 0)
+            {
+               close(connected);
+               printf("\nThe Cliente enviou uma mensagem de fechamento de conexao!\n");
+               fflush(stdout);
+               break;
+            }
 
          if (strcmp(send_data, 999) == 0)
          {
              for(i=0;i<4;i++){
-                 send(connected, (unsigned char*)&candidatos[i], strlen((unsigned char*)&candidatos[i]), 0);
+                 char preparado[20];
+                 preparaDados(candidatos[i], preparado);
+                 send(connected, preparado, strlen(preparado), 0);
              }
          }
          if (strcmp(send_data, 888) == 0)
@@ -215,6 +241,15 @@ int main(int argc, char *argv[ ])
 
             // Funcao recv (int socket, void *buffer, size_t size, int flags)        
             bytes_recv = recv(connected, recv_data, 1024, 0);
+            
+            int codigoVotacao;
+            
+            codigoVotacao = atoi(recv_data);
+            
+            for(i=0;i<4;i++){
+                computaVoto(candidatos[i], codigoVotacao);
+            }
+            
 
             recv_data[bytes_recv] = '\0';
                
