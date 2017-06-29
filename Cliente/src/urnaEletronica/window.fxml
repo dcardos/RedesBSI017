@@ -5,11 +5,10 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="638.0" prefWidth="993.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="urnaEletronica.MainWindowController">
+<AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="638.0" prefWidth="993.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="urnaEletronica.MainWindowController">
    <children>
       <Label alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="14.0" text="Votação Eletrônica" textAlignment="CENTER" textOverrun="CLIP" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0">
          <font>
@@ -21,12 +20,11 @@
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <RadioButton layoutX="46.0" layoutY="130.0" mnemonicParsing="false" text="RadioButton" />
-      <Button fx:id="btnVotarBranco" layoutX="545.0" layoutY="577.0" mnemonicParsing="false" text="Votar em branco" />
-      <Button fx:id="btnVotarNulo" layoutX="715.0" layoutY="577.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="131.0" text="Votar nulo" />
-      <Button fx:id="btnVotar" layoutX="101.0" layoutY="577.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="131.0" text="Votar" />
-      <Button fx:id="btnEncerrar" layoutX="885.0" layoutY="577.0" mnemonicParsing="false" onAction="#closeWindow" text="Encerrar" />
-      <BarChart layoutX="382.0" layoutY="130.0" prefHeight="421.0" prefWidth="583.0">
+      <Button fx:id="btnVotarBranco" layoutX="382.0" layoutY="577.0" mnemonicParsing="false" onAction="#votarEmBranco" prefHeight="31.0" prefWidth="110.0" text="Votar em branco" />
+      <Button fx:id="btnVotarNulo" layoutX="497.0" layoutY="577.0" mnemonicParsing="false" onAction="#votarNulo" prefHeight="31.0" prefWidth="131.0" text="Votar nulo" />
+      <Button fx:id="btnVotar" layoutX="101.0" layoutY="577.0" mnemonicParsing="false" onAction="#votar" prefHeight="31.0" prefWidth="131.0" text="Votar" />
+      <Button fx:id="btnEncerrar" layoutX="902.0" layoutY="577.0" mnemonicParsing="false" onAction="#closeWindow" prefHeight="31.0" prefWidth="63.0" text="Encerrar" />
+      <BarChart fx:id="barChart" layoutX="382.0" layoutY="130.0" prefHeight="421.0" prefWidth="583.0">
         <xAxis>
           <CategoryAxis side="BOTTOM" />
         </xAxis>
@@ -39,6 +37,6 @@
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <Button fx:id="btnAtualizar" layoutX="884.0" layoutY="83.0" mnemonicParsing="false" text="Atualizar" />
+      <Button fx:id="btnAtualizar" layoutX="884.0" layoutY="83.0" mnemonicParsing="false" onAction="#atualizarGrafico" text="Atualizar" />
    </children>
 </AnchorPane>
