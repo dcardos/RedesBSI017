@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,20 +68,34 @@ public class MainWindowController {
     }
 
     public  void atualizarGrafico() {
+
         System.out.println("pegar número de votos atuais do servitor");
         // TODO atualizar candidatos, requisitar do servidor
 
-        final CategoryAxis xAxis = new CategoryAxis();
-        final NumberAxis yAxis = new NumberAxis();
-        barChart = new BarChart<String, Number>(xAxis, yAxis);
+        barChart.getData().clear();
+        barChart.setLegendVisible(false);
+
+        final CategoryAxis xAxis = (CategoryAxis)barChart.getXAxis();
+        final NumberAxis yAxis = (NumberAxis)barChart.getYAxis();
         xAxis.setLabel("Candidatos");
         yAxis.setLabel("Número de votos");
+        IntegerStringConverter integerStringConverter = new IntegerStringConverter();
+        yAxis.setTickLabelFormatter(integerStringConverter);
+        XYChart.Series serie = new XYChart.Series();
 
-        XYChart.Series series = new XYChart.Series();
+        ArrayList<XYChart.Data<String, Number>> dataCandidatos = new ArrayList<>();
         for (Candidato candidato : mCandidatos) {
-            series.getData().add(new XYChart.Data(candidato.getNome_candidato(), candidato.getNum_votos()));
+            XYChart.Data<String, Number> data = new XYChart.Data(candidato.getNome_candidato(), candidato.getNum_votos());
+            dataCandidatos.add(data);
+            serie.getData().add(data);
         }
-        barChart.getData().add(series);
+        barChart.getData().add(serie);
+
+        int i = 1;
+        for (XYChart.Data<String, Number> data : dataCandidatos){
+            data.getNode().setStyle("-fx-bar-fill: CHART_COLOR_"+i+";");
+            i++;
+        }
 
     }
 
@@ -118,5 +133,24 @@ public class MainWindowController {
 
     public void closeWindow() {
         mMain.getPrimaryStage().close();
+    }
+}
+
+class IntegerStringConverter extends StringConverter<Number> {
+
+    public IntegerStringConverter() {
+    }
+
+    @Override
+    public String toString(Number object) {
+        if(object.intValue()!=object.doubleValue())
+            return "";
+        return ""+(object.intValue());
+    }
+
+    @Override
+    public Number fromString(String string) {
+        Number val = Double.parseDouble(string);
+        return val.intValue();
     }
 }
