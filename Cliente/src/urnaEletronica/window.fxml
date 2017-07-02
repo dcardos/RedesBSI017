@@ -24,7 +24,7 @@
       <Button fx:id="btnVotarNulo" layoutX="497.0" layoutY="577.0" mnemonicParsing="false" onAction="#votarNulo" prefHeight="31.0" prefWidth="131.0" text="Votar nulo" />
       <Button fx:id="btnVotar" layoutX="101.0" layoutY="577.0" mnemonicParsing="false" onAction="#votar" prefHeight="31.0" prefWidth="131.0" text="Votar" />
       <Button fx:id="btnEncerrar" layoutX="902.0" layoutY="577.0" mnemonicParsing="false" onAction="#closeWindow" prefHeight="31.0" prefWidth="63.0" text="Encerrar" />
-      <BarChart fx:id="barChart" layoutX="382.0" layoutY="130.0" prefHeight="421.0" prefWidth="583.0">
+      <BarChart fx:id="barChart" layoutX="428.0" layoutY="130.0" prefHeight="421.0" prefWidth="537.0">
         <xAxis>
           <CategoryAxis side="BOTTOM" />
         </xAxis>
@@ -38,5 +38,6 @@
          </font>
       </Label>
       <Button fx:id="btnAtualizar" layoutX="884.0" layoutY="83.0" mnemonicParsing="false" onAction="#atualizarGrafico" text="Atualizar" />
+      <Button fx:id="btnCarregarCandidatos" layoutX="46.0" layoutY="51.0" mnemonicParsing="false" onAction="#adicionaCandidatos" text="Carregar candidatos" />
    </children>
 </AnchorPane>

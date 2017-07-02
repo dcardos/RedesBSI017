@@ -23,6 +23,7 @@ public class MainWindowController {
     @FXML private Button btnVotarBranco;
     @FXML private Button btnVotarNulo;
     @FXML private Button btnAtualizar;
+    @FXML private Button btnCarregarCandidatos;
 
     private Main mMain;
     private ArrayList<Candidato> mCandidatos;
@@ -35,19 +36,25 @@ public class MainWindowController {
         btnVotarBranco.setDisable(true);
         btnVotarNulo.setDisable(true);
 
-        userFeedback.setText("Carregando mCandidatos, aguarde.");
-//        ClienteConexao.conecta();
+        userFeedback.setText("Por favor, primeiramente carregue os candidatos.");
+
+        atualizarGrafico();
+    }
+
+    public void adicionaCandidatos() throws IOException {
+        btnCarregarCandidatos.setDisable(true);
+        ClienteConexao clienteConexao = new ClienteConexao();
+        String dados = clienteConexao.conexaoRecebeCandidatos();
+        System.out.println("Fazer parser de " + dados);
 
         mCandidatos = new ArrayList<>();
-        // TODO: mock data, get this from the server
+        // TODO: mock data, get this from the server (dados)
         Candidato candidato1 = new Candidato(11, "Mario", "PMI", 0);
         Candidato candidato2 = new Candidato(22, "Megaman", "IMM", 0);
         Candidato candidato3 = new Candidato(33, "Donkey", "FMDM", 0);
         mCandidatos.add(candidato1);
         mCandidatos.add(candidato2);
         mCandidatos.add(candidato3);
-
-        userFeedback.setText("Candidatos carregados. Escolha abaixo:");
 
         mGrupoCandidatos = new ToggleGroup();
 
@@ -60,14 +67,14 @@ public class MainWindowController {
             i++;
         }
 
+        userFeedback.setText("Candidatos carregados. Escolha abaixo:");
+
         btnVotar.setDisable(false);
         btnVotarBranco.setDisable(false);
         btnVotarNulo.setDisable(false);
-
-        atualizarGrafico();
     }
 
-    public  void atualizarGrafico() {
+    public void atualizarGrafico() {
 
         System.out.println("pegar número de votos atuais do servitor");
         // TODO atualizar candidatos, requisitar do servidor
@@ -83,20 +90,21 @@ public class MainWindowController {
         yAxis.setTickLabelFormatter(integerStringConverter);
         XYChart.Series serie = new XYChart.Series();
 
-        ArrayList<XYChart.Data<String, Number>> dataCandidatos = new ArrayList<>();
-        for (Candidato candidato : mCandidatos) {
-            XYChart.Data<String, Number> data = new XYChart.Data(candidato.getNome_candidato(), candidato.getNum_votos());
-            dataCandidatos.add(data);
-            serie.getData().add(data);
-        }
-        barChart.getData().add(serie);
+        if (mCandidatos != null) {
+            ArrayList<XYChart.Data<String, Number>> dataCandidatos = new ArrayList<>();
+            for (Candidato candidato : mCandidatos) {
+                XYChart.Data<String, Number> data = new XYChart.Data(candidato.getNome_candidato(), candidato.getNum_votos());
+                dataCandidatos.add(data);
+                serie.getData().add(data);
+            }
+            barChart.getData().add(serie);
 
-        int i = 1;
-        for (XYChart.Data<String, Number> data : dataCandidatos){
-            data.getNode().setStyle("-fx-bar-fill: CHART_COLOR_"+i+";");
-            i++;
+            int i = 1;
+            for (XYChart.Data<String, Number> data : dataCandidatos){
+                data.getNode().setStyle("-fx-bar-fill: CHART_COLOR_"+i+";");
+                i++;
+            }
         }
-
     }
 
     public void votar() {

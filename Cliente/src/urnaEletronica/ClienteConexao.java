@@ -11,15 +11,15 @@ import java.net.SocketException;
  */
 public class ClienteConexao {
 
-    public static void  conecta() throws IOException{
-        // TODO: adicionar IP do servidor
+    public String conexaoRecebeCandidatos() throws IOException{
+        // IP do servidor
         String server = "cosmos.lasdpc.icmc.usp.br";
 
         // Converte String de mensagem para bytes codificacao padrao
         byte[] byteBuffer = "888".getBytes();   // carregar candidatos
 
         // recebe porta por argumento opcional, default é a porta 7
-        // TODO: adicionar porta do servidor
+        // porta do servidor
         int servPort = 40003;
 
         // Cria o socket que sera utilizado para se conectar ao servidor na porta especificada
@@ -50,5 +50,7 @@ public class ClienteConexao {
         System.out.println("Mensagem recebida: " + new String(byteBuffer));
 
         socket.close();
+
+        return new String(byteBuffer);
     }
 }
