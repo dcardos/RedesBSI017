@@ -16,7 +16,7 @@ public class ClienteConexao {
         String server = "cosmos.lasdpc.icmc.usp.br";
 
         // Converte String de mensagem para bytes codificacao padrao
-        byte[] byteBuffer = "888".getBytes();   // carregar candidatos
+        byte[] byteBuffer = "999".getBytes();   // carregar candidatos
 
         // recebe porta por argumento opcional, default é a porta 7
         // porta do servidor
@@ -37,20 +37,21 @@ public class ClienteConexao {
         int totalBytesRcvd = 0;
 
         int bytesRcvd;
-
+        String messageString = new String();
         // TODO: saber quando parar de ler (qual resposta?)
-        while (totalBytesRcvd < byteBuffer.length) {
-
-            if ((bytesRcvd = in.read(byteBuffer, totalBytesRcvd, byteBuffer.length - totalBytesRcvd)) == -1)
+        while (messageString.indexOf('!')==-1) {
+            if ((bytesRcvd = in.read(byteBuffer)) == -1)
                 throw new SocketException("Conexao fechada inesperadamente");
 
-            totalBytesRcvd += bytesRcvd;
+            messageString += new String(byteBuffer, 0, bytesRcvd);
+
+            System.out.println("totalBytesRcvd = " + messageString.length() + " mensagem parcial: " + messageString);
         }
 
-        System.out.println("Mensagem recebida: " + new String(byteBuffer));
+        System.out.println("Mensagem recebida: " + messageString);
 
         socket.close();
 
-        return new String(byteBuffer);
+        return messageString;
     }
 }
