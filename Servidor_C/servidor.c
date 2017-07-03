@@ -194,12 +194,21 @@ int main(int argc, char *argv[ ])
         printf("\nConexão aceita de (%s , %d)\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
         // Loop para manter a troca de mensagens
-        while (1)
+        int flag = 1;
+        while (flag == 1)
         {
+            printf("\nOuvindo cliente (trava enquanto cliente não falar algo)\n");
             // Funcao recv (int socket, void *buffer, size_t size, int flags)
             bytes_recv = recv(connected, recv_data, 1024, 0);
+            if (bytes_recv < 0) {
+                printf("\nNão consegui ler do cliente, fechando socket do cliente\n");
+                fflush(stdout);
+                close(connected);
+                flag = 0;
+            }
             recv_data[bytes_recv] = '\0';
-
+            printf("\nCliente falou: %s\n", recv_data);
+            fflush(stdout);
             if (strcmp(recv_data,"999") == 0)
             {
                 char preparado[500];
@@ -216,22 +225,28 @@ int main(int argc, char *argv[ ])
                     strcat(preparado, ",");
                     snprintf(buffer, 12,"%d",candidatos[i].num_votos);
                     strcat(preparado, buffer);
-                    strcat(preparado, ";");
+                    strcat(preparado, ";"); // final de um candidato
                 }
-
+                strcat(preparado, "!"); // final da mensagem
                 printf("\nSera enviado: %s\n", preparado);
                 // Função send(int socket, void*buffer, size_t size, int flags)
-                send(sock,preparado,strlen(preparado), 0);
-                printf("\nDado dos candidatos enviado, fechando esta conexão\n");
-                close(connected);
+                send(connected,preparado,strlen(preparado),0);
                 fflush(stdout);
-                break;
+                close(connected);
+                printf("\nDado dos candidatos enviado, socket do cliente fechado\n");
+                flag = 0;
+            } else {
+                printf("\nCliente mandou %d bytes de algo inesperado, fechando socket do cliente\n", bytes_recv);
+                fflush(stdout);
+                close(connected);
+                flag = 0;
             }
             // TODO: fazer caso do 888 (cliente quer enviar voto da urna)
+            printf("\nDegub: final do loop infinito\n");
             fflush(stdout);
         }
     }
-
+    printf("\nFechando socket do servidor\n");
     close(sock);
     return 0;
 }
