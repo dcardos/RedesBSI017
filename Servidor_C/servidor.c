@@ -209,7 +209,7 @@ int main(int argc, char *argv[ ])
             recv_data[bytes_recv] = '\0';
             printf("\nCliente falou: %s\n", recv_data);
             fflush(stdout);
-            if (strcmp(recv_data,"999!") == 0)
+            if (strcmp(recv_data,"999") == 0)
             {
                 char preparado[500];
                 char buffer[12];
@@ -265,41 +265,49 @@ int main(int argc, char *argv[ ])
                 
                 int i=0;
                 int j=0;
+                int k=0;
                 int codInt;
                 int nVotosInt;
                 
                 //Computa os votos para cada candidato
                 while(i != count){
+                    k=0;
                     char cod[10];
                     char nVotos[10];
                     strcpy(cod,"");
                     strcpy(nVotos,"");
                     
-                    while(strcmp(recv_data2[j], ",") == 1){
-                        strcat(cod,recv_data2[j]);
+                    while(recv_data2[j] != ','){
+                        cod[k] = recv_data2[j];
+                        //printf("O valor eh %c \n", cod[k]);
+                        k++;
                         j++;
                     }
-                    
+                    k=0;
                     j++;
                     
-                    while(strcmp(recv_data2[j], ";") == 1){
-                        strcat(nVotos,recv_data2[j]);
+                    while(recv_data2[j] != ';'){
+                        nVotos[k] = recv_data2[j];
+                        //printf("O valor eh %c \n", nVotos[k]);
+                        k++;
                         j++;
                     }
                     
                     j++;
                     
                     codInt = atoi(cod);
+                    //printf("O valor eh %d", codInt);
                     nVotosInt = atoi(nVotos);
+                    //printf("O valor eh %d", nVotos);
                     
                     for(int k = 0; k < NCANDIDATOS; k++){
-                        if(candidatos[i].codigo_votacao == codInt)
-                            candidatos[i].num_votos += nVotosInt;
+                        if(candidatos[k].codigo_votacao == codInt)
+                            candidatos[k].num_votos += nVotosInt;
                     }
                     
                     
                     i++;
-                }
+                }  
                
             }
             // TODO: fazer caso do 888 (cliente quer enviar voto da urna)
