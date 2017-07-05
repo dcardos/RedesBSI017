@@ -11,11 +11,13 @@ public class Candidato {
     private String partido;
     private int num_votos;
     private RadioButton rbCandidato;
+    private int num_VotosUrna;
 
     public Candidato(int codigo_votacao, String nome_candidato, String partido) {
         this.codigo_votacao = codigo_votacao;
         this.nome_candidato = nome_candidato;
         this.partido = partido;
+        this.num_VotosUrna = 0;
         setRBCandidato();
     }
 
@@ -24,6 +26,7 @@ public class Candidato {
         this.nome_candidato = nome_candidato;
         this.partido = partido;
         this.num_votos = num_votos;
+        this.num_VotosUrna = 0;
         setRBCandidato();
     }
 
@@ -60,6 +63,14 @@ public class Candidato {
     }
 
     public void incrementNum_votos() {
-        this.num_votos++;
+        this.num_VotosUrna++;
+    }
+
+    public int getNum_VotosUrna() {
+        return num_VotosUrna;
+    }
+
+    public void setNum_VotosUrna(int num_VotosUrna) {
+        this.num_VotosUrna = num_VotosUrna;
     }
 }

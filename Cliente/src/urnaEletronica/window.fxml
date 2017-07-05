@@ -37,7 +37,7 @@
             <Font name="Calibri" size="20.0" />
          </font>
       </Label>
-      <Button fx:id="btnAtualizar" layoutX="884.0" layoutY="83.0" mnemonicParsing="false" onAction="#atualizarGrafico" text="Atualizar" />
+      <Button fx:id="btnAtualizar" layoutX="827.0" layoutY="86.0" mnemonicParsing="false" onAction="#atualizarGrafico" text="Enviar votos e atualizar" />
       <Button fx:id="btnCarregarCandidatos" layoutX="46.0" layoutY="51.0" mnemonicParsing="false" onAction="#adicionaCandidatos" text="Carregar candidatos" />
    </children>
 </AnchorPane>

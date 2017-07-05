@@ -24,6 +24,7 @@ public class MainWindowController {
     @FXML private Button btnVotarNulo;
     @FXML private Button btnAtualizar;
     @FXML private Button btnCarregarCandidatos;
+    @FXML private Button btnEncerrar;
 
     private Main mMain;
     private ArrayList<Candidato> mCandidatos;
@@ -42,6 +43,7 @@ public class MainWindowController {
         btnVotar.setDisable(true);
         btnVotarBranco.setDisable(true);
         btnVotarNulo.setDisable(true);
+        btnAtualizar.setDisable(true);
 
         userFeedback.setText("Por favor, primeiramente carregue os candidatos.");
 
@@ -70,6 +72,7 @@ public class MainWindowController {
         btnVotar.setDisable(false);
         btnVotarBranco.setDisable(false);
         btnVotarNulo.setDisable(false);
+        btnAtualizar.setDisable(false);
     }
 
     public void parser(String cadeia) throws Exception {
@@ -96,12 +99,45 @@ public class MainWindowController {
         }
     }
 
-    public void atualizarGrafico() throws IOException {
-        // enviando votos atuais para o servidor
-        mClienteConexao.conexaoEnviaVotos(mCandidatos);
+    public void computaVotos(String cadeia) throws Exception {
+        if (cadeia == null)
+            throw new Exception("Cadeia vazia!!");
+        else if (!cadeia.contains(","))
+            throw new Exception("Cadeia fora do padrão, sem vírgulas!");
+        else if (!cadeia.contains(";"))
+            throw new Exception("Cadeia fora do padrão, sem ponto e vírgulas!");
+        else if (!cadeia.contains("!"))
+            throw new Exception("Cadeia fora do padrão, sem exclamação!");
+        String[] parts = cadeia.split(",|;");
+        int i = 0;
+        boolean end = false;
+        while(!end){
+            int codigoVotacao = Integer.parseInt(parts[2*i]);
+            int numVotos = Integer.parseInt(parts[1+2*i]);
+            for(Candidato candidato : mCandidatos){
+                if (candidato.getCodigo_votacao() == codigoVotacao) {
+                    candidato.setNum_votos(numVotos);
+                }
+            }
+            if (parts[2+2*i].equals("!"))
+                end = true;
+            i++;
+        }
+    }
 
-        System.out.println("pegar número de votos atuais do servitor");
-        // TODO atualizar candidatos, requisitar do servidor
+    public void zerarUrna() {
+        for (Candidato candidato : mCandidatos) {
+            candidato.setNum_VotosUrna(0);
+        }
+    }
+
+    public void atualizarGrafico() throws Exception {
+        // enviando votos atuais para o servidor
+        String votosAtualizados = mClienteConexao.conexaoEnviaRecebeVotos(mCandidatos);
+        computaVotos(votosAtualizados);
+        // zerando votos nesta urna (Ja enviados)
+        zerarUrna();
+        btnEncerrar.setDisable(false);
 
         barChart.getData().clear();
         barChart.setLegendVisible(false);
@@ -135,27 +171,30 @@ public class MainWindowController {
         for (Candidato candidato : mCandidatos) {
             if (candidato.getRbCandidato().isSelected()) {
                 System.out.println("candidato: " + candidato.getNome_candidato() + " codigo: " + candidato.getCodigo_votacao());
-                // TODO: enviar codigo votação ao servidor, excluir codigo abaixo
                 candidato.incrementNum_votos();
+                btnEncerrar.setDisable(true);
             }
         }
     }
 
 
-    public void votarEmBranco() {
+    public void votarEmBranco() throws Exception{
+        atualizarGrafico();
         System.out.println("Voto para o candidato mais votado");
-        int codigoCandidatoMaisVotado = -1;
         int numVotosDoCandidatoMaisVotado = -1;
+        Candidato candidatoMaisVotado = null;
         for (Candidato candidato : mCandidatos) {
             if (candidato.getNum_votos() > numVotosDoCandidatoMaisVotado) {
                 numVotosDoCandidatoMaisVotado = candidato.getNum_votos();
-                codigoCandidatoMaisVotado = candidato.getCodigo_votacao();
+                candidatoMaisVotado = candidato;
             }
         }
-        if (codigoCandidatoMaisVotado > -1) {
-            System.out.println("Enviar ao servidor o código: " + codigoCandidatoMaisVotado);
-            // TODO:  enviar ao servidor
+        if (candidatoMaisVotado != null) {
+            System.out.println("Computando um voto para: " + candidatoMaisVotado.getNome_candidato());
+            candidatoMaisVotado.incrementNum_votos();
+            btnEncerrar.setDisable(true);
         }
+
     }
 
     public void votarNulo() {

@@ -4,16 +4,14 @@ import java.util.ArrayList;
 
 public class Servidor {
 
-    private static final int BUFSIZE = 32; // Tamanho do buffer de recepcao
-    private static ArrayList<CandidatoUrna> mCandidatos;
+    public static final int BUFSIZE = 32; // Tamanho do buffer de recepcao
+    public static ArrayList<CandidatoUrna> mCandidatos;
 
     public static void main (String[] args) throws IOException, Exception{
-
         if (args.length != 1)
             throw new IllegalArgumentException("Parametro(s): <Porta>");
 
         mCandidatos = new ArrayList<>();
-
         // candidatos no servidor
         mCandidatos.add(new CandidatoUrna(1, "Joao", "AB", 0));
         mCandidatos.add(new CandidatoUrna(2, "Maria", "CD", 0));
@@ -27,70 +25,12 @@ public class Servidor {
         ServerSocket servSock = new ServerSocket(servPort);
         System.out.println("Servidor pronto para aceitar conexoes...");
         int recvMsgSize; // Tamanho da mensagem de recepção
-        byte[] byteBuffer = new byte[BUFSIZE]; // Buffer de recpcao
 
         for (;;) { // Sempre em execucao, aceitando conexoes
 
             Socket clntSock = servSock.accept(); // Aceita a conexao com o cliente
+            new ClientThread(clntSock).start();
 
-            System.out.println("Atendimento do cliente " + clntSock.getInetAddress().getHostAddress() + " na porta " + clntSock.getPort());
-
-            InputStream in = clntSock.getInputStream();
-
-            OutputStream out = clntSock.getOutputStream();
-
-            // Recebe dados até que "!" seja recebido
-
-            int bytesRcvd;
-            String messageString = new String();
-            while (messageString.indexOf('!')==-1) {
-                if ((bytesRcvd = in.read(byteBuffer)) == -1)
-                    throw new SocketException("Conexao fechada inesperadamente");
-
-                messageString += new String(byteBuffer, 0, bytesRcvd);
-
-                System.out.println("totalBytesRcvd = " + messageString.length() + " mensagem parcial: " + messageString);
-            }
-
-            System.out.println("Cliente falou: " + messageString);
-            if (messageString.equals("999!")) {
-                // Converte String de mensagem para bytes codificacao padrao
-                StringBuilder dados = new StringBuilder();
-                for (CandidatoUrna candidato : mCandidatos) {
-                    dados.append(candidato.getCodigo_votacao());
-                    dados.append(",");
-                    dados.append(candidato.getNome_candidato());
-                    dados.append(",");
-                    dados.append(candidato.getPartido());
-                    dados.append(",");
-                    dados.append(candidato.getNum_votos());
-                    dados.append(";");
-                }
-                dados.append("!");
-                byte[] byteBufferDados = dados.toString().getBytes();   // carregar candidatos
-                System.out.println("Enviando ao cliente os dados: " + dados);
-                // envia os dados
-                out.write(byteBufferDados);
-            } else if (messageString.equals("888!")) {
-                byteBuffer = "ok!".getBytes();
-                out.write(byteBuffer);
-
-                messageString = new String();
-                while (messageString.indexOf('!')==-1) {
-                    if ((bytesRcvd = in.read(byteBuffer)) == -1)
-                        throw new SocketException("Conexao fechada inesperadamente");
-
-                    messageString += new String(byteBuffer, 0, bytesRcvd);
-
-                    System.out.println("totalBytesRcvd = " + messageString.length() + " mensagem parcial: " + messageString);
-                }
-                // computa votos recebidos
-                computaVotos(messageString);
-            } else {
-                System.out.println("OpCode ou mensagem indecifravel!");
-            }
-
-            clntSock.close(); // Fecha o socket.
         } // Fim do For
 
     }
@@ -118,6 +58,133 @@ public class Servidor {
             if (parts[2+2*i].equals("!"))
                 end = true;
             i++;
+        }
+    }
+}
+
+class ClientThread extends Thread {
+    private Socket clientSocket;
+
+    public ClientThread(Socket clientSocket) {
+        this.clientSocket = clientSocket;
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Atendimento do cliente " + clientSocket.getInetAddress().getHostAddress() + " na porta " + clientSocket.getPort());
+
+        InputStream in;
+        OutputStream out;
+        try {
+            in = clientSocket.getInputStream();
+            out = clientSocket.getOutputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        // Recebe dados até que "!" seja recebido
+        byte[] byteBuffer = new byte[Servidor.BUFSIZE]; // Buffer de recpcao
+        int bytesRcvd;
+        String messageString = new String();
+        while (messageString.indexOf('!')==-1) {
+            try {
+                bytesRcvd = in.read(byteBuffer);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+            if (bytesRcvd == -1) {
+                System.out.println("Conexao fechada inesperadamente");
+                return;
+            }
+            messageString += new String(byteBuffer, 0, bytesRcvd);
+            System.out.println("totalBytesRcvd = " + messageString.length() + " mensagem parcial: " + messageString);
+        }
+
+        System.out.println("Cliente falou: " + messageString);
+        if (messageString.equals("999!")) {
+            // Converte String de mensagem para bytes codificacao padrao
+            StringBuilder dados = new StringBuilder();
+            for (CandidatoUrna candidato : Servidor.mCandidatos) {
+                dados.append(candidato.getCodigo_votacao());
+                dados.append(",");
+                dados.append(candidato.getNome_candidato());
+                dados.append(",");
+                dados.append(candidato.getPartido());
+                dados.append(",");
+                dados.append(candidato.getNum_votos());
+                dados.append(";");
+            }
+            dados.append("!");
+            byte[] byteBufferDados = dados.toString().getBytes();   // carregar candidatos
+            System.out.println("Enviando ao cliente os dados: " + dados);
+            // envia os dados
+            try {
+                out.write(byteBufferDados);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+
+        } else if (messageString.equals("888!")) {
+            byteBuffer = "ok!".getBytes();
+            try {
+                out.write(byteBuffer);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            messageString = new String();
+            // le do cliente os votos daquela urna
+            while (messageString.indexOf('!')==-1) {
+                try {
+                    bytesRcvd = in.read(byteBuffer);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                if (bytesRcvd == -1) {
+                    System.out.println("Conexao fechada inesperadamente");
+                    return;
+                }
+                messageString += new String(byteBuffer, 0, bytesRcvd);
+                System.out.println("totalBytesRcvd = " + messageString.length() + " mensagem parcial: " + messageString);
+            }
+            // computa votos recebidos
+            try {
+                Servidor.computaVotos(messageString);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+            // manda todos os votos recebidos até então (de todas as urnas)
+            // Converte String de mensagem para bytes codificacao padrao
+            StringBuilder dados = new StringBuilder();
+            for (CandidatoUrna candidato : Servidor.mCandidatos) {
+                dados.append(candidato.getCodigo_votacao());
+                dados.append(",");
+                dados.append(candidato.getNum_votos());
+                dados.append(";");
+            }
+            dados.append("!");
+            byte[] byteBufferDados = dados.toString().getBytes();   // carregar candidatos
+            try {
+                out.write(byteBufferDados);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+        } else {
+            System.out.println("OpCode ou mensagem indecifravel!");
+        }
+
+        try {
+            clientSocket.close(); // Fecha o socket
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
         }
     }
 }
