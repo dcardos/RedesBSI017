@@ -235,14 +235,9 @@ int main(int argc, char *argv[ ])
                 close(connected);
                 printf("\nDado dos candidatos enviado, socket do cliente fechado\n");
                 flag = 0;
-            } else {
-                printf("\nCliente mandou %d bytes de algo inesperado, fechando socket do cliente\n", bytes_recv);
-                fflush(stdout);
-                close(connected);
-                flag = 0;
-            }
+            } 
             
-            if (strcmp(recv_data,"888!") == 0){
+            else if (strcmp(recv_data,"888!") == 0){
                 bytes_recv2 = recv(connected, recv_data2, 1024, 0);
                 
                 if (bytes_recv2 < 0) {
@@ -309,6 +304,13 @@ int main(int argc, char *argv[ ])
                     i++;
                 }  
                
+            }
+            
+            else {
+                printf("\nCliente mandou %d bytes de algo inesperado, fechando socket do cliente\n", bytes_recv);
+                fflush(stdout);
+                close(connected);
+                flag = 0;
             }
             // TODO: fazer caso do 888 (cliente quer enviar voto da urna)
             printf("\nDegub: final do loop infinito\n");
