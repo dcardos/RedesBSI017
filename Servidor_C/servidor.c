@@ -67,8 +67,8 @@ int main(int argc, char *argv[ ])
 
 
     //Variaveis
-    int sock, connected, bytes_recv, i, true = 1;
-    char send_data [1024] , recv_data[1024];
+    int sock, connected, bytes_recv, bytes_recv2, i, true = 1;
+    char send_data [1024] , recv_data[1024], recv_data2[1024];
     struct sockaddr_in server_addr, client_addr;
     int sin_size;
 
@@ -209,7 +209,7 @@ int main(int argc, char *argv[ ])
             recv_data[bytes_recv] = '\0';
             printf("\nCliente falou: %s\n", recv_data);
             fflush(stdout);
-            if (strcmp(recv_data,"999") == 0)
+            if (strcmp(recv_data,"999!") == 0)
             {
                 char preparado[500];
                 char buffer[12];
@@ -240,6 +240,67 @@ int main(int argc, char *argv[ ])
                 fflush(stdout);
                 close(connected);
                 flag = 0;
+            }
+            
+            if (strcmp(recv_data,"888!") == 0){
+                bytes_recv2 = recv(connected, recv_data2, 1024, 0);
+                
+                if (bytes_recv2 < 0) {
+                    printf("\nNão consegui ler do cliente, fechando socket do cliente\n");
+                    fflush(stdout);
+                    close(connected);
+                    flag = 0;
+                }
+                recv_data2[bytes_recv2] = '\0';
+                printf("\nCliente falou: %s\n", recv_data2);
+                fflush(stdout);
+                
+                //Conta quantos candidatos existem para ser atualizados
+                int count = 0;
+                for(int i=0; i < strlen(recv_data2); i++){
+                    if(strcmp(recv_data2, ";") == 0)
+                        count++;
+                }
+                
+                
+                int i=0;
+                int j=0;
+                int codInt;
+                int nVotosInt;
+                
+                //Computa os votos para cada candidato
+                while(i != count){
+                    char cod[10];
+                    char nVotos[10];
+                    strcpy(cod,"");
+                    strcpy(nVotos,"");
+                    
+                    while(strcmp(recv_data2[j], ",") == 1){
+                        strcat(cod,recv_data2[j]);
+                        j++;
+                    }
+                    
+                    j++;
+                    
+                    while(strcmp(recv_data2[j], ";") == 1){
+                        strcat(nVotos,recv_data2[j]);
+                        j++;
+                    }
+                    
+                    j++;
+                    
+                    codInt = atoi(cod);
+                    nVotosInt = atoi(nVotos);
+                    
+                    for(int k = 0; k < NCANDIDATOS; k++){
+                        if(candidatos[i].codigo_votacao == codInt)
+                            candidatos[i].num_votos += nVotosInt;
+                    }
+                    
+                    
+                    i++;
+                }
+               
             }
             // TODO: fazer caso do 888 (cliente quer enviar voto da urna)
             printf("\nDegub: final do loop infinito\n");
