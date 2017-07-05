@@ -28,6 +28,13 @@ public class MainWindowController {
     private Main mMain;
     private ArrayList<Candidato> mCandidatos;
     private ToggleGroup mGrupoCandidatos;
+    private ClienteConexao mClienteConexao;
+
+    public MainWindowController() {
+        mCandidatos = new ArrayList<>();
+        mClienteConexao = new ClienteConexao();
+        mGrupoCandidatos = new ToggleGroup();
+    }
 
     public void setMain(Main main) throws IOException {
         mMain = main;
@@ -38,25 +45,16 @@ public class MainWindowController {
 
         userFeedback.setText("Por favor, primeiramente carregue os candidatos.");
 
-        atualizarGrafico();
+//        atualizarGrafico();
     }
 
-    public void adicionaCandidatos() throws IOException {
+    public void adicionaCandidatos() throws Exception {
         btnCarregarCandidatos.setDisable(true);
-        ClienteConexao clienteConexao = new ClienteConexao();
-        String dados = clienteConexao.conexaoRecebeCandidatos();
+
+        String dados = mClienteConexao.conexaoRecebeCandidatos();
+//        String dados = "1,Joao,AB,0;2,Maria,CD,0;3,Carlos,EF,0;4,Suzana,GH,0;5,Sofia,IJ,0;!";
         System.out.println("Fazer parser de " + dados);
-
-        mCandidatos = new ArrayList<>();
-        // TODO: mock data, get this from the server (dados)
-        Candidato candidato1 = new Candidato(11, "Mario", "PMI", 0);
-        Candidato candidato2 = new Candidato(22, "Megaman", "IMM", 0);
-        Candidato candidato3 = new Candidato(33, "Donkey", "FMDM", 0);
-        mCandidatos.add(candidato1);
-        mCandidatos.add(candidato2);
-        mCandidatos.add(candidato3);
-
-        mGrupoCandidatos = new ToggleGroup();
+        parser(dados);
 
         Double i = 0.0;
         for (Candidato candidato : mCandidatos) {
@@ -74,7 +72,33 @@ public class MainWindowController {
         btnVotarNulo.setDisable(false);
     }
 
-    public void atualizarGrafico() {
+    public void parser(String cadeia) throws Exception {
+        if (cadeia == null)
+            throw new Exception("Cadeia vazia!");
+        else if (!cadeia.contains(","))
+            throw new Exception("Cadeia fora do padrão, sem vírgulas");
+        else if (!cadeia.contains(";"))
+            throw new Exception("Cadeia fora do padrão, sem ponto e vírgulas");
+        else if (!cadeia.contains("!"))
+            throw new Exception("Cadeia fora do padrão, sem exclamação");
+        String[] parts = cadeia.split(",|;");
+        int i = 0;
+        boolean end = false;
+        while(!end){
+            int codigoVotacao = Integer.parseInt(parts[4*i]);
+            String nome = parts[1+4*i];
+            String partido = parts[2+4*i];
+            int numVotos = Integer.parseInt(parts[3+4*i]);
+            mCandidatos.add(new Candidato(codigoVotacao, nome, partido, numVotos));
+            if (parts[4+4*i].equals("!"))
+                end = true;
+            i++;
+        }
+    }
+
+    public void atualizarGrafico() throws IOException {
+        // enviando votos atuais para o servidor
+        mClienteConexao.conexaoEnviaVotos(mCandidatos);
 
         System.out.println("pegar número de votos atuais do servitor");
         // TODO atualizar candidatos, requisitar do servidor
