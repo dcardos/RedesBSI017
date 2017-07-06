@@ -46,8 +46,6 @@ public class MainWindowController {
         btnAtualizar.setDisable(true);
 
         userFeedback.setText("Por favor, primeiramente carregue os candidatos.");
-
-//        atualizarGrafico();
     }
 
     public void adicionaCandidatos() throws Exception {
@@ -144,6 +142,10 @@ public class MainWindowController {
 
         final CategoryAxis xAxis = (CategoryAxis)barChart.getXAxis();
         final NumberAxis yAxis = (NumberAxis)barChart.getYAxis();
+        xAxis.setAnimated(false);
+        yAxis.setAnimated(true);
+        barChart.setAnimated(true);
+
         xAxis.setLabel("Candidatos");
         yAxis.setLabel("Número de votos");
         IntegerStringConverter integerStringConverter = new IntegerStringConverter();
@@ -177,9 +179,13 @@ public class MainWindowController {
         }
     }
 
-
     public void votarEmBranco() throws Exception{
-        atualizarGrafico();
+        // enviando votos atuais para o servidor
+        String votosAtualizados = mClienteConexao.conexaoEnviaRecebeVotos(mCandidatos);
+        computaVotos(votosAtualizados);
+        // zerando votos nesta urna (Ja enviados)
+        zerarUrna();
+        // agora sim podemos ver quem é o mais votado
         System.out.println("Voto para o candidato mais votado");
         int numVotosDoCandidatoMaisVotado = -1;
         Candidato candidatoMaisVotado = null;

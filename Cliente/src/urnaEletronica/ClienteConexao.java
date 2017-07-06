@@ -44,7 +44,6 @@ public class ClienteConexao {
                 throw new SocketException("Conexao fechada inesperadamente");
 
             messageString += new String(byteBuffer, 0, bytesRcvd);
-
             System.out.println("totalBytesRcvd = " + messageString.length() + " mensagem parcial: " + messageString);
         }
 
@@ -86,15 +85,16 @@ public class ClienteConexao {
 
         String messageString = new String();
         int bytesRcvd;
+        // le resposta "ok!" do servidor
         while (messageString.indexOf('!')==-1) {
             if ((bytesRcvd = in.read(byteBufferOpCode)) == -1)
                 throw new SocketException("Conexao fechada inesperadamente!");
             messageString += new String(byteBufferOpCode, 0, bytesRcvd);
             System.out.println("totalBytesRcvd = " + messageString.length() + " mensagem parcial: " + messageString);
         }
-        // espera ok do servidor para enviar votos
+        // verifica ok do servidor para enviar votos
         if (messageString.equals("ok!")) {
-            out.write(byteBufferDados); // Envia os dados
+            out.write(byteBufferDados); // Envia os dados da votação da urna
         } else {
             throw new SocketException("Não consegui saber se servidor estava pronto para receber votos!");
         }

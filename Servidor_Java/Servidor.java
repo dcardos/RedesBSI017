@@ -23,11 +23,10 @@ public class Servidor {
 
         // Cria um server socket para aceitar conexoes do cliente
         ServerSocket servSock = new ServerSocket(servPort);
-        System.out.println("Servidor pronto para aceitar conexoes...");
         int recvMsgSize; // Tamanho da mensagem de recepção
 
         for (;;) { // Sempre em execucao, aceitando conexoes
-
+            System.out.println("Servidor pronto para aceitar conexoes...");
             Socket clntSock = servSock.accept(); // Aceita a conexao com o cliente
             new ClientThread(clntSock).start();
 
@@ -72,6 +71,12 @@ class ClientThread extends Thread {
     @Override
     public void run() {
         System.out.println("Atendimento do cliente " + clientSocket.getInetAddress().getHostAddress() + " na porta " + clientSocket.getPort());
+        try {
+        	Thread.sleep(10000);
+        } catch (InterruptedException e) {
+        	e.printStackTrace();
+        	return;
+        }
 
         InputStream in;
         OutputStream out;
