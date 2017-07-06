@@ -58,6 +58,8 @@ public class MainWindowController {
 
         Double i = 0.0;
         for (Candidato candidato : mCandidatos) {
+            if (candidato.getNome_candidato().equalsIgnoreCase("nulo"))
+                continue;   // não adiciona radio button para o voto nulo
             candidato.getRbCandidato().setToggleGroup(mGrupoCandidatos);
             mainPane.getChildren().add(candidato.getRbCandidato());
             AnchorPane.setTopAnchor(candidato.getRbCandidato(), 130 + 30*i);
@@ -205,7 +207,12 @@ public class MainWindowController {
 
     public void votarNulo() {
         System.out.println("Voto nulo");
-        // TODO: enviar voto nulo ao servidor
+        for (Candidato candidato : mCandidatos) {
+            if (candidato.getNome_candidato().equalsIgnoreCase("nulo")) {
+                candidato.incrementNum_votos();
+                btnEncerrar.setDisable(true);
+            }
+        }
     }
 
     public void closeWindow() {

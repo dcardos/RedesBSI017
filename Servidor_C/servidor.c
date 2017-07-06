@@ -9,7 +9,7 @@
 #include <errno.h>  // Utilizado para capturar mensagens de erro
 #include <string.h>
 
-#define NCANDIDATOS  5
+#define NCANDIDATOS  6
 
 typedef struct candidato{
     int codigo_votacao;
@@ -43,6 +43,10 @@ int main(int argc, char *argv[ ])
     candidatos[4].codigo_votacao = 5;
     strcpy(candidatos[4].nome_candidato, "Sofia");
     strcpy(candidatos[4].partido, "IJ");
+    candidatos[4].num_votos = 0;
+    candidatos[5].codigo_votacao = 6;
+    strcpy(candidatos[5].nome_candidato, "Nulo");
+    strcpy(candidatos[5].partido, "-");
     candidatos[4].num_votos = 0;
 
     /*
@@ -163,10 +167,6 @@ int main(int argc, char *argv[ ])
         exit(1);
     }
 
-    printf("\nServidor TCP esperando por conexoes na porta 40003\n");
-    fflush(stdout);
-
-
     // Loop para receber varias solicitacoes
     while(1)
     {
@@ -189,134 +189,153 @@ int main(int argc, char *argv[ ])
         	A funcao accept retorna  
 
         */
-
+        printf("\nServidor TCP esperando por conexoes na porta 40003\n");
+        fflush(stdout);
         connected = accept(sock, (struct sockaddr *)&client_addr, &sin_size);
         printf("\nConexão aceita de (%s , %d)\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
-        // Loop para manter a troca de mensagens
-        int flag = 1;
-        while (flag == 1)
+    
+        printf("\nOuvindo cliente (trava enquanto cliente não falar algo)\n");
+        // Funcao recv (int socket, void *buffer, size_t size, int flags)
+        bytes_recv = recv(connected, recv_data, 1024, 0);
+        if (bytes_recv < 0) {
+            printf("\nNão consegui ler do cliente, fechando socket do cliente\n");
+            fflush(stdout);
+            close(connected);
+        }
+        recv_data[bytes_recv] = '\0';
+        printf("\nCliente falou: %s\n", recv_data);
+        fflush(stdout);
+        if (strcmp(recv_data,"999!") == 0)
         {
-            printf("\nOuvindo cliente (trava enquanto cliente não falar algo)\n");
-            // Funcao recv (int socket, void *buffer, size_t size, int flags)
-            bytes_recv = recv(connected, recv_data, 1024, 0);
-            if (bytes_recv < 0) {
+            char preparado[500];
+            char buffer[12];
+            int i;
+            strcpy(preparado, "");
+            for (i = 0; i<NCANDIDATOS; i++){
+                snprintf(buffer, 12,"%d",candidatos[i].codigo_votacao);
+                strcat(preparado, buffer);
+                strcat(preparado, ",");
+                strcat(preparado, candidatos[i].nome_candidato);
+                strcat(preparado, ",");
+                strcat(preparado, candidatos[i].partido);
+                strcat(preparado, ",");
+                snprintf(buffer, 12,"%d",candidatos[i].num_votos);
+                strcat(preparado, buffer);
+                strcat(preparado, ";"); // final de um candidato
+            }
+            strcat(preparado, "!"); // final da mensagem
+            printf("\nSera enviado: %s\n", preparado);
+            // Função send(int socket, void*buffer, size_t size, int flags)
+            send(connected,preparado,strlen(preparado),0);
+            fflush(stdout);
+            close(connected);
+            printf("\nDado dos candidatos enviado, socket do cliente fechado\n");
+
+        } else if (strcmp(recv_data,"888!") == 0){
+
+            printf("Enviando resposta: ok!\n");
+            fflush(stdout);
+            char resposta[4] = "ok!";
+            send(connected,resposta,strlen(resposta),0);
+
+            printf("\nEsperando cliente mandar os votos da urna\n");
+            fflush(stdout);
+            bytes_recv2 = recv(connected, recv_data2, 1024, 0);
+            if (bytes_recv2 < 0) {
                 printf("\nNão consegui ler do cliente, fechando socket do cliente\n");
                 fflush(stdout);
                 close(connected);
-                flag = 0;
             }
-            recv_data[bytes_recv] = '\0';
-            printf("\nCliente falou: %s\n", recv_data);
+            recv_data2[bytes_recv2] = '\0';
+            printf("\nCliente falou: %s. Fazendo parser dos dados\n", recv_data2);
             fflush(stdout);
-            if (strcmp(recv_data,"999") == 0)
-            {
-                char preparado[500];
-                char buffer[12];
-                int i;
-                strcpy(preparado, "");
-                for (i = 0; i<NCANDIDATOS; i++){
-                    snprintf(buffer, 12,"%d",candidatos[i].codigo_votacao);
-                    strcat(preparado, buffer);
-                    strcat(preparado, ",");
-                    strcat(preparado, candidatos[i].nome_candidato);
-                    strcat(preparado, ",");
-                    strcat(preparado, candidatos[i].partido);
-                    strcat(preparado, ",");
-                    snprintf(buffer, 12,"%d",candidatos[i].num_votos);
-                    strcat(preparado, buffer);
-                    strcat(preparado, ";"); // final de um candidato
-                }
-                strcat(preparado, "!"); // final da mensagem
-                printf("\nSera enviado: %s\n", preparado);
-                // Função send(int socket, void*buffer, size_t size, int flags)
-                send(connected,preparado,strlen(preparado),0);
-                fflush(stdout);
-                close(connected);
-                printf("\nDado dos candidatos enviado, socket do cliente fechado\n");
-                flag = 0;
-            } 
-            
-            else if (strcmp(recv_data,"888!") == 0){
-                bytes_recv2 = recv(connected, recv_data2, 1024, 0);
-                
-                if (bytes_recv2 < 0) {
-                    printf("\nNão consegui ler do cliente, fechando socket do cliente\n");
-                    fflush(stdout);
-                    close(connected);
-                    flag = 0;
-                }
-                recv_data2[bytes_recv2] = '\0';
-                printf("\nCliente falou: %s\n", recv_data2);
-                fflush(stdout);
-                
-                //Conta quantos candidatos existem para ser atualizados
-                int count = 0;
-                for(int i=0; i < strlen(recv_data2); i++){
-                    if(strcmp(recv_data2, ";") == 0)
-                        count++;
-                }
-                
-                
-                int i=0;
-                int j=0;
-                int k=0;
-                int codInt;
-                int nVotosInt;
-                
-                //Computa os votos para cada candidato
-                while(i != count){
-                    k=0;
-                    char cod[10];
-                    char nVotos[10];
-                    strcpy(cod,"");
-                    strcpy(nVotos,"");
-                    
-                    while(recv_data2[j] != ','){
-                        cod[k] = recv_data2[j];
-                        //printf("O valor eh %c \n", cod[k]);
-                        k++;
-                        j++;
-                    }
-                    k=0;
-                    j++;
-                    
-                    while(recv_data2[j] != ';'){
-                        nVotos[k] = recv_data2[j];
-                        //printf("O valor eh %c \n", nVotos[k]);
-                        k++;
-                        j++;
-                    }
-                    
-                    j++;
-                    
-                    codInt = atoi(cod);
-                    //printf("O valor eh %d", codInt);
-                    nVotosInt = atoi(nVotos);
-                    //printf("O valor eh %d", nVotos);
-                    
-                    for(int k = 0; k < NCANDIDATOS; k++){
-                        if(candidatos[k].codigo_votacao == codInt)
-                            candidatos[k].num_votos += nVotosInt;
-                    }
-                    
-                    
-                    i++;
-                }  
-               
+
+            //Conta quantos candidatos existem para ser atualizados
+            int count = 0;
+            int i=0;
+            int j=0;
+            int k=0;
+            int codInt;
+            int nVotosInt;
+
+            while(recv_data2[j] != '!'){
+                if (recv_data2[j] == ',')
+                    count++;
+                j++;
             }
-            
-            else {
-                printf("\nCliente mandou %d bytes de algo inesperado, fechando socket do cliente\n", bytes_recv);
-                fflush(stdout);
-                close(connected);
-                flag = 0;
-            }
-            // TODO: fazer caso do 888 (cliente quer enviar voto da urna)
-            printf("\nDegub: final do loop infinito\n");
+            printf("\nDegub: count = %d\n", count);
             fflush(stdout);
+            
+            //Computa os votos para cada candidato
+            j = 0;
+            while(i < count){
+                k=0;
+                char cod[10];
+                char nVotos[10];
+                strcpy(cod,"");
+                strcpy(nVotos,"");
+                
+                while(recv_data2[j] != ','){
+                    cod[k] = recv_data2[j];
+                    //printf("O valor eh %c \n", cod[k]);
+                    k++;
+                    j++;
+                }
+                k=0;
+                j++;
+                
+                while(recv_data2[j] != ';'){
+                    nVotos[k] = recv_data2[j];
+                    //printf("O valor eh %c \n", nVotos[k]);
+                    k++;
+                    j++;
+                }
+                
+                j++;
+                
+                codInt = atoi(cod);
+                //printf("O valor eh %d", codInt);
+                nVotosInt = atoi(nVotos);
+                //printf("O valor eh %d", nVotos);
+                
+                for(int k = 0; k < NCANDIDATOS; k++){
+                    if(candidatos[k].codigo_votacao == codInt)
+                        candidatos[k].num_votos += nVotosInt;
+                }
+                
+                i++;
+            }  
+            printf("\nParser concluido, preparando para enviar o numero de votos total.\n");
+            fflush(stdout);
+            char preparado[250];
+            char buffer[12];
+            strcpy(preparado, "");
+            for (i = 0; i<NCANDIDATOS; i++){
+                snprintf(buffer, 12,"%d",candidatos[i].codigo_votacao);
+                strcat(preparado, buffer);
+                strcat(preparado, ",");
+                snprintf(buffer, 12,"%d",candidatos[i].num_votos);
+                strcat(preparado, buffer);
+                strcat(preparado, ";"); // final de um candidato
+            }
+            strcat(preparado, "!"); // final da mensagem
+            printf("\nSera enviado: %s\n", preparado);
+            fflush(stdout);
+            // Função send(int socket, void*buffer, size_t size, int flags)
+            send(connected,preparado,strlen(preparado),0);
+            close(connected);
+            printf("\nVoto de cada candidato enviado, socket do cliente fechado\n");
+            fflush(stdout);
+
+        } else {
+
+            printf("\nCliente mandou %d bytes de algo inesperado, fechando socket do cliente\n", bytes_recv);
+            fflush(stdout);
+            close(connected);
         }
     }
+
     printf("\nFechando socket do servidor\n");
     close(sock);
     return 0;

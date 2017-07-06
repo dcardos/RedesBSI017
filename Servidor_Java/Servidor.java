@@ -18,6 +18,7 @@ public class Servidor {
         mCandidatos.add(new CandidatoUrna(3, "Carlos", "EF", 0));
         mCandidatos.add(new CandidatoUrna(4, "Suzana", "GH", 0));
         mCandidatos.add(new CandidatoUrna(5, "Sofia", "IJ", 0));
+        mCandidatos.add(new CandidatoUrna(6, "Nulo", "-", 0));
 
         int servPort = Integer.parseInt(args[0]);
 
@@ -72,7 +73,7 @@ class ClientThread extends Thread {
     public void run() {
         System.out.println("Atendimento do cliente " + clientSocket.getInetAddress().getHostAddress() + " na porta " + clientSocket.getPort());
         try {
-        	Thread.sleep(10000);
+        	Thread.sleep(5000);
         } catch (InterruptedException e) {
         	e.printStackTrace();
         	return;
