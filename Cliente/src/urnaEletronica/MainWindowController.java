@@ -72,7 +72,6 @@ public class MainWindowController {
         btnVotar.setDisable(false);
         btnVotarBranco.setDisable(false);
         btnVotarNulo.setDisable(false);
-        btnAtualizar.setDisable(false);
     }
 
     public void parser(String cadeia) throws Exception {
@@ -138,6 +137,7 @@ public class MainWindowController {
         // zerando votos nesta urna (Ja enviados)
         zerarUrna();
         btnEncerrar.setDisable(false);
+        btnAtualizar.setDisable(true);
 
         barChart.getData().clear();
         barChart.setLegendVisible(false);
@@ -179,6 +179,7 @@ public class MainWindowController {
                 btnEncerrar.setDisable(true);
             }
         }
+        btnAtualizar.setDisable(false);
     }
 
     public void votarEmBranco() throws Exception{
@@ -202,7 +203,7 @@ public class MainWindowController {
             candidatoMaisVotado.incrementNum_votos();
             btnEncerrar.setDisable(true);
         }
-
+        btnAtualizar.setDisable(false);
     }
 
     public void votarNulo() {
@@ -213,6 +214,7 @@ public class MainWindowController {
                 btnEncerrar.setDisable(true);
             }
         }
+        btnAtualizar.setDisable(false);
     }
 
     public void closeWindow() {
