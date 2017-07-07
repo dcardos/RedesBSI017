@@ -324,6 +324,8 @@ int main(int argc, char *argv[ ])
     }
 
     // Loop para receber varias solicitacoes
+    pthread_t thread;
+    int rc;
     while(1)
     {
 
@@ -349,8 +351,7 @@ int main(int argc, char *argv[ ])
         fflush(stdout);
         connected = accept(sock, (struct sockaddr *)&client_addr, &sin_size);
         printf("\nConexão aceita de (%s , %d)\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
-        pthread_t thread;
-        int rc = pthread_create(&thread, NULL, ThreadDoCliente, (void *)connected);
+        rc = pthread_create(&thread, NULL, ThreadDoCliente, (void *)connected);
         if (rc){
           printf("ERROR; return code from pthread_create() is %d\n", rc);
           exit(-1);
